@@ -1,3 +1,5 @@
-BOT_TOKEN = "8254350933:AAEf5Aku6Qq49mipwHhWr3nsFbPEnOn76h8"  # @BotFather dan olingan token
-ADMIN_IDS = [7797218486]  # Admin Telegram ID si
-DB_NAME = "fikrxona.db"
+from decouple import config
+
+BOT_TOKEN = config("BOT_TOKEN")
+ADMIN_IDS = [int(x) for x in config("ADMIN_IDS").split(",")]
+DB_NAME = config("DB_NAME")
