@@ -8,11 +8,12 @@ pip install -r requirements.txt
 
 ## 2. Token sozlash
 
-`config.py` faylini oching va quyidagilarni to'ldiring:
+`.env` nomli yangi fayl oching va quyidagilarni to'ldiring:
 
 ```python
 BOT_TOKEN = "sizning_tokeningiz"   # @BotFather dan oling
-ADMIN_IDS = [sizning_telegram_id]  # @userinfobot orqali ID ni biling
+ADMIN_IDS = [sizning_telegram_id]  # @userinfobot orqali ID ni bilib oling
+DB_NAME = "fikrxona.db"
 ```
 
 ## 3. Botni ishga tushirish
@@ -50,11 +51,16 @@ fikrxona_bot/
 ├── config.py        # Token va sozlamalar
 ├── database.py      # SQLite
 ├── keyboards.py     # Tugmalar
+├── docker-compose.yml
+├── Dockerfile
+├── LICENSE
+├── README.md
 ├── requirements.txt
-└── handlers/
-    ├── start.py
-    ├── search.py
-    ├── categories.py
-    ├── recommend.py
-    └── admin.py
+├── handlers
+│   ├── admin.py
+│   ├── categories.py
+│   ├── __init__.py
+│   ├── recommend.py
+│   ├── search.py
+│   └── start.py
 ```
