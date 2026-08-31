@@ -1,4 +1,5 @@
 import os
+import urllib.parse
 import logging
 from aiohttp import ClientSession
 from aiogram import Router, F
@@ -49,7 +50,7 @@ async def search_process(message: Message, state: FSMContext):
 
     async with ClientSession() as session:
         try:
-            resp = await session.get(f"https://www.dbooks.org/api/search/{query}")
+            resp = await session.get(f"https://www.dbooks.org/api/search/{urllib.parse.quote(query)}")
             data = await resp.json()
 
             if data.get("status") == "ok":
