@@ -50,25 +50,55 @@ async def search_process(message: Message, state: FSMContext):
 
     async with ClientSession() as session:
         try:
-            resp = await session.get(f"https://www.dbooks.org/api/search/{urllib.parse.quote(query)}")
+            resp = await session.get(f"https://www.dbooks.org/api/search/{query.replace(' ', '+')}")
             data = await resp.json()
 
             if data.get("status") == "ok":
-                d_books = (data.get("books") or [])[:20]
+                all_books = data.get("books") or []
+                d_books = []
+                
+                # Bepul "Smart Filter" (Matnli tahlil):
+                query_lower = query.lower()
+                query_words = set(query_lower.replace("-", " ").split())
+                
+                for b in all_books:
+                    t = (b.get("title") or "").lower()
+                    a = (b.get("authors") or "").lower()
+                    s = (b.get("subtitle") or "").lower()
+                    
+                    # Direct match
+                    if query_lower in t or query_lower in a or query_lower in s:
+                        d_books.append(b)
+                        continue
+                    
+                    # Word overlap analysis
+                    target_words = set((t + " " + a + " " + s).replace("-", " ").split())
+                    overlap = query_words.intersection(target_words)
+                    
+                    if query_words and len(overlap) >= len(query_words) / 2.0:
+                        d_books.append(b)
 
-                text = "🌐 <b>Global natijalar: {}</b>\n\n{}".format(
-                    len(d_books),
-                    "\n\n".join(
-                        f"<b>{i + 1}.</b> {b.get('title', '')} — <i>{b.get('authors', '')}</i>"
-                        for i, b in enumerate(d_books)
+                d_books = d_books[:20]
+
+                if not d_books:
+                    await message.answer(
+                        f"😔 <b>«{query}»</b> nomli kitob global bazadan ham topilmadi.\n\n(Qidiruvga umuman aloqasi yo'q bo'lgan kitoblar filter orqali olib tashlandi).",
+                        parse_mode="HTML"
                     )
-                )
+                else:
+                    text = "🌐 <b>Global natijalar: {}</b>\n\n{}".format(
+                        len(d_books),
+                        "\n\n".join(
+                            f"<b>{i + 1}.</b> {b.get('title', '')} — <i>{b.get('authors', '')}</i>"
+                            for i, b in enumerate(d_books)
+                        )
+                    )
 
-                await message.answer(
-                    text=text,
-                    parse_mode="HTML",
-                    reply_markup=dbooks_recent_books_list(d_books)
-                )
+                    await message.answer(
+                        text=text,
+                        parse_mode="HTML",
+                        reply_markup=dbooks_recent_books_list(d_books)
+                    )
             else:
                 await message.answer(
                     f"😔 <b>«{query}»</b> bo'yicha hech narsa topilmadi.\n\nBoshqa so'z bilan urinib ko'ring.",
