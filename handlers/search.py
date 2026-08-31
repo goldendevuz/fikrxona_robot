@@ -3,7 +3,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-from database import search_books, get_book_by_id, increment_downloads, log_download
+from database import search_books, get_book_by_id, increment_downloads, log_download, get_stats
 from keyboards import books_list_keyboard, book_keyboard, main_menu, cancel_keyboard
 
 router = Router()
@@ -15,6 +15,11 @@ class SearchState(StatesGroup):
 
 @router.message(F.text == "🔍 Kitob qidirish")
 async def search_start(message: Message, state: FSMContext):
+    books_count, _, _ = get_stats()
+    if books_count == 0:
+        await message.answer("😔 Hozircha kitoblar yo'q.", reply_markup=main_menu())
+        return
+
     await state.set_state(SearchState.waiting_query)
     await message.answer("🔍 Kitob nomi yoki muallif ismini kiriting:", reply_markup=cancel_keyboard())
 
