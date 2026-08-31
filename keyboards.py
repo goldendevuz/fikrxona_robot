@@ -79,3 +79,20 @@ def admin_delete_cat_keyboard(categories) -> InlineKeyboardMarkup:
     kb.button(text="🔙 Orqaga", callback_data="back_admin")
     kb.adjust(1)
     return kb.as_markup()
+
+
+def dbooks_recent_books_list(books_data) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    for i, book in enumerate(books_data):
+        kb.button(text=str(i + 1), callback_data=f"dbook_id_{book['id']}")
+    kb.adjust(5)
+    return kb.as_markup()
+
+
+def dbooks_book_keyboard(url: str, book_id: str) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.button(text="↗️ Havola", url=url)
+    kb.button(text="📥 Yuklab olish", callback_data=f"dbook_down_{book_id}")
+    kb.button(text="🔙 Orqaga", callback_data="back_main")
+    kb.adjust(1)
+    return kb.as_markup()
